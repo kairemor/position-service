@@ -1,0 +1,11 @@
+###
+GET http://localhost:3000/positions
+
+###
+GET http://localhost:3000/positions/67f2bf25d5e45ddfbe14794e
+
+###
+GET http://localhost:3000/positions/device/864292047214737
+
+###
+GET http://localhost:3000/positions/latest/?deviceIds=864292047214737&startTime=2025-04-22T18:48:00Z&endTime=2025-04-22T18:50:59Z

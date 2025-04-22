@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: position-service
+    restart: always
+    expose:
+      - '3000'
+    env_file:
+      - .env.local
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge

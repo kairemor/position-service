@@ -40,6 +40,7 @@ export class PositionService {
       },
     ]);
   }
+
   // getLastPositionByDeviceId
   async getLastPositionByDeviceId(deviceId: string): Promise<Position> {
     const position = await this.positionModel
@@ -75,6 +76,9 @@ export class PositionService {
       };
     }
     //   groupe positions by deviceId and return data format {devicedId: string, positions: Position[]}
+
+    // limit to 20 positions per deviceId
+
     const positions = (await this.positionModel
       .aggregate([
         {
@@ -91,7 +95,8 @@ export class PositionService {
           $project: {
             _id: 0,
             deviceId: '$_id',
-            positions: 1,
+            // positions: 1,
+            positions: { $slice: ['$positions', 1000] },
           },
         },
       ])
@@ -101,7 +106,36 @@ export class PositionService {
         positions: Position[];
       }[]
     >;
+    // get randomly 2o positions by including the first last and the middle position
+    // for (const position of await positions) {
+    //   const positionsArray = position.positions;
+    //   if (positionsArray.length > 20) {
+    //     const firstPosition = positionsArray[0];
+    //     const lastPosition = positionsArray[positionsArray.length - 1];
 
+    //     // Get middle positions (excluding first and last)
+    //     const middlePositions = positionsArray.slice(1, -1);
+
+    //     // Randomly select 18 positions from the middle
+    //     const selectedIndices = new Set();
+    //     while (selectedIndices.size < Math.min(1, middlePositions.length)) {
+    //       const randomIndex = Math.floor(
+    //         Math.random() * middlePositions.length,
+    //       );
+    //       selectedIndices.add(randomIndex);
+    //     }
+
+    //     // Get the selected positions and sort by their original indices to maintain order
+    //     const randomPositions = Array.from(selectedIndices as Set<number>)
+    //       .sort((a: number, b: number) => a - b) // Sort indices to maintain original order
+    //       .map((index: number) => middlePositions[index]);
+
+    //     position.positions = [firstPosition, ...randomPositions, lastPosition];
+    //   } else {
+    //     // If there are less than 20 positions, keep all of them
+    //     position.positions = positionsArray;
+    //   }
+    // }
     return positions;
   }
 }

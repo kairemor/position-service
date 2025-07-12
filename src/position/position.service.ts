@@ -133,8 +133,8 @@ export class PositionService {
           $project: {
             _id: 0,
             deviceId: '$_id',
-            positions: 1,
-            // positions: { $slice: ['$positions', 1000] }, // Limit to 1000 entries
+            // positions: 1,
+            positions: { $slice: ['$positions', 100] }, // Limit to 1000 entries
           },
         },
       ])
@@ -146,5 +146,14 @@ export class PositionService {
     >;
 
     return positions;
+  }
+
+  //findAllTrips
+  async findAllTrips(): Promise<Position[]> {
+    const positionsWithTrips = await this.positionModel
+      .find({ trip: { $in: [0, 1] } })
+      .sort({ timestamp: 1 })
+      .exec();
+    return positionsWithTrips;
   }
 }

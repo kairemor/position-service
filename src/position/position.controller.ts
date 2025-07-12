@@ -23,6 +23,12 @@ export class PositionController {
     return this.positionService.getLastPositionOfAllDevices();
   }
 
+  // Example endpoint to find all trips
+  @Get('trips')
+  async findAllTrips() {
+    return this.positionService.findAllTrips();
+  }
+
   // Example endpoint to get the last position by deviceId
   @Get('last/:deviceId')
   async getLastPositionByDeviceId(@Param('deviceId') deviceId: string) {

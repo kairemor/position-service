@@ -68,6 +68,12 @@ export class Position extends Document {
 
   @Prop({ required: true })
   event: number;
+
+  @Prop({ required: false })
+  trip: number;
+
+  @Prop({ required: false })
+  trip_Odometer_m: number;
 }
 
 export const PositionSchema = SchemaFactory.createForClass(Position);

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Position } from './schemas/position.schema';
@@ -64,13 +66,10 @@ export class PositionService {
       deviceId: { $in: deviceIds },
     };
     if (startTime) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       match.timestamp = { $gte: new Date(startTime).getTime() };
     }
     if (endTime) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       match.timestamp = {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         ...match.timestamp,
         $lte: new Date(endTime).getTime(),
       };
@@ -149,11 +148,54 @@ export class PositionService {
   }
 
   //findAllTrips
-  async findAllTrips(): Promise<Position[]> {
-    const positionsWithTrips = await this.positionModel
-      .find({ trip: { $in: [0, 1] } })
-      .sort({ timestamp: 1 })
-      .exec();
+  async findAllTrips(
+    deviceIds: string[],
+    startTime?: string | Date,
+    endTime?: string | Date,
+  ): Promise<
+    {
+      deviceId: string;
+      positions: Position[];
+    }[]
+  > {
+    const match: any = {};
+    if (deviceIds.length !== 0) {
+      match.deviceId = { $in: deviceIds };
+    }
+    if (startTime) {
+      match.timestamp = { $gte: new Date(startTime).getTime() };
+    }
+    if (endTime) {
+      match.timestamp = {
+        ...match.timestamp,
+        $lte: new Date(endTime).getTime(),
+      };
+    }
+    match.trip = { $in: [0, 1] };
+    const positionsWithTrips = (await this.positionModel
+      .aggregate([
+        { $match: match },
+        { $sort: { timestamp: 1 } },
+        {
+          $group: {
+            _id: '$deviceId',
+            positions: { $push: '$$ROOT' }, // Push all positions for each device
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            deviceId: '$_id',
+            positions: 1,
+          },
+        },
+      ])
+      .exec()) as unknown as Promise<
+      {
+        deviceId: string;
+        positions: Position[];
+      }[]
+    >;
     return positionsWithTrips;
   }
 }

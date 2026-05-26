@@ -47,7 +47,7 @@ export class PositionService {
   async getLastPositionByDeviceId(deviceId: string): Promise<Position> {
     const position = await this.positionModel
       .find({ deviceId })
-      .sort({ createdAt: -1 })
+      .sort({ timestamp: -1 })
       .limit(1)
       .exec();
     if (!position || position.length === 0) {

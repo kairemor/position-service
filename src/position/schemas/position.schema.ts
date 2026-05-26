@@ -86,6 +86,9 @@ export class Position extends Document {
 
   @Prop({ required: false })
   GNSS_speed_kmh: number;
+
+  @Prop({ required: false })
+  ignition_On_Counter_s: number;
 }
 
 export const PositionSchema = SchemaFactory.createForClass(Position);

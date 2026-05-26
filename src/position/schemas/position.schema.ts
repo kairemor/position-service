@@ -74,6 +74,18 @@ export class Position extends Document {
 
   @Prop({ required: false })
   trip_Odometer_m: number;
+
+  @Prop({ required: false })
+  fuel_level_kvants: number;
+
+  @Prop({ required: false })
+  fuel_temp_celcius: number;
+
+  @Prop({ required: false })
+  device_Timestamp: number;
+
+  @Prop({ required: false })
+  GNSS_speed_kmh: number;
 }
 
 export const PositionSchema = SchemaFactory.createForClass(Position);

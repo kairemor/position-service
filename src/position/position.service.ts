@@ -31,6 +31,7 @@ export class PositionService {
   // getLastPositionOfAllDevices
   async getLastPositionOfAllDevices(): Promise<Position[]> {
     return this.positionModel.aggregate([
+      { $sort: { timestamp: 1 } },
       {
         $group: {
           _id: '$deviceId',
@@ -132,8 +133,12 @@ export class PositionService {
           $project: {
             _id: 0,
             deviceId: '$_id',
-            // positions: 1,
-            positions: { $slice: ['$positions', 100] }, // Limit to 1000 entries
+            positions: {
+              $slice: [
+                { $sortArray: { input: '$positions', sortBy: { timestamp: 1 } } },
+                100,
+              ],
+            },
           },
         },
       ])

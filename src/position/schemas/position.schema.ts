@@ -92,3 +92,6 @@ export class Position extends Document {
 }
 
 export const PositionSchema = SchemaFactory.createForClass(Position);
+
+PositionSchema.index({ deviceId: 1, timestamp: 1 });
+PositionSchema.index({ timestamp: 1 });
